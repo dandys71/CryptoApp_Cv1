@@ -1,5 +1,6 @@
 package cz.uhk.fim.cryptoapp
 
+import CryptoDetailScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -61,7 +62,12 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
         modifier = Modifier.padding(innerPadding)
     ) {
         composable("cryptoList") { CryptoListScreen(navController) }
-        //todo cryptoDetail
+        composable("cryptoDetail/{cryptoId}"){ navBackStackEntry ->
+            val cryptoId = navBackStackEntry.arguments?.getString("cryptoId")
+            if(cryptoId != null){
+                CryptoDetailScreen(navController, cryptoId)
+            }
+        }
         //todo favoriteCrypto a settings
     }
 }
