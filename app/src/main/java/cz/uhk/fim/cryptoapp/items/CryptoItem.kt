@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
@@ -23,16 +24,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cz.uhk.fim.cryptoapp.R
+import cz.uhk.fim.cryptoapp.const.Routes
 import cz.uhk.fim.cryptoapp.data.Crypto
+import cz.uhk.fim.cryptoapp.viewmodels.FavouriteCryptoViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CryptoItem(crypto: Crypto, navController: NavController) {
+fun CryptoItem(
+    crypto: Crypto,
+    navController: NavController,
+    isFavourite: Boolean = false,
+    viewModel: FavouriteCryptoViewModel = koinViewModel()
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable {
-                navController.navigate("cryptoDetail/${crypto.id}")
+                navController.navigate(Routes.cryptoDetail(crypto.id))
             },
         verticalAlignment = Alignment.CenterVertically
     )
@@ -53,15 +62,23 @@ fun CryptoItem(crypto: Crypto, navController: NavController) {
         }
 
         IconButton(onClick = {
-            navController.navigate("cryptoDetail/${crypto.id}")
+            navController.navigate(Routes.cryptoDetail(crypto.id))
         }) {
             Icon(Icons.Filled.Info, contentDescription = "Detail")
         }
 
         IconButton(onClick = {
-            //todo přidej do favourites
+            if (!isFavourite) {
+                viewModel.addFavouriteCrypto(crypto)
+            } else {
+                viewModel.removeFavouriteCrypto(crypto)
+            }
         }) {
-            Icon(Icons.Filled.FavoriteBorder, contentDescription = "Add to favourite")
+            if (!isFavourite) {
+                Icon(Icons.Filled.FavoriteBorder, contentDescription = "Add to favourite")
+            }else{
+                Icon(Icons.Filled.Favorite, contentDescription = "Remove from favourites")
+            }
         }
     }
 }
