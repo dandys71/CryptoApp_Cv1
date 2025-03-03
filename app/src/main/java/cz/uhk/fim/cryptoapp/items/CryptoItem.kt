@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cz.uhk.fim.cryptoapp.R
-import cz.uhk.fim.cryptoapp.const.Routes
+import cz.uhk.fim.cryptoapp.consts.Routes
 import cz.uhk.fim.cryptoapp.data.Crypto
 import cz.uhk.fim.cryptoapp.viewmodels.FavouriteCryptoViewModel
 import org.koin.androidx.compose.koinViewModel

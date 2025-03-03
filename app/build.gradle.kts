@@ -62,6 +62,15 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //koin (pro dependency injection)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    // OkHttp (pro logování)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 }

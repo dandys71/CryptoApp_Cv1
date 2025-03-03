@@ -1,4 +1,4 @@
-package cz.uhk.fim.cryptoapp.const
+package cz.uhk.fim.cryptoapp.consts
 
 //objekt pro konstanty všech routes
 //objekt umožňuje statický přístup (v podstatě singleton)

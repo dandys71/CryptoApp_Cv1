@@ -1,4 +1,4 @@
-package cz.uhk.fim.cryptoapp.const
+package cz.uhk.fim.cryptoapp.consts
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder

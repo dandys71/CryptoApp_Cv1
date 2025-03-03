@@ -28,8 +28,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import cz.uhk.fim.cryptoapp.const.BottomNavItem
-import cz.uhk.fim.cryptoapp.const.Routes
+import cz.uhk.fim.cryptoapp.consts.BottomNavItem
+import cz.uhk.fim.cryptoapp.consts.Routes
 import cz.uhk.fim.cryptoapp.screens.CryptoListScreen
 import cz.uhk.fim.cryptoapp.screens.FavouriteCryptoScreen
 import cz.uhk.fim.cryptoapp.ui.theme.CryptoAppTheme
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         startKoin { //inicializace DI
             androidContext(this@MainActivity)
-            modules(repositoryModule, viewModelModule) //nastaveni modulu (ze souboru AppModules)
+            modules(repositoryModule, viewModelModule, networkModule) //nastaveni modulu (ze souboru AppModules)
         }
         setContent {
             CryptoAppTheme {
