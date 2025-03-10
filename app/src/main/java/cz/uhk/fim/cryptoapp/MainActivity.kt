@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         startKoin { //inicializace DI
             androidContext(this@MainActivity)
-            modules(repositoryModule, viewModelModule, networkModule) //nastaveni modulu (ze souboru AppModules)
+            modules(repositoryModule, viewModelModule, networkModule, objectBoxModule) //nastaveni modulu (ze souboru AppModules)
         }
         setContent {
             CryptoAppTheme {

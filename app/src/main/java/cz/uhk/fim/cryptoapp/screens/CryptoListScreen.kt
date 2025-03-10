@@ -32,14 +32,13 @@ fun CryptoListScreen(
     viewModel: CryptoViewModel = koinViewModel(),
     favoriteViewModel: FavouriteCryptoViewModel = koinViewModel()
 ) {
+    val listState = rememberLazyListState()
     val cryptoList by viewModel.cryptoList.collectAsState()
-    val favourites by favoriteViewModel.favouriteCryptoList.collectAsState()
+    val favourites by favoriteViewModel.favouriteCryptos.collectAsState()
 
-    LaunchedEffect(Unit) { //LaunchedEffects potřebuje nějaký klíč, aby věděl, zda se již vykonal či nikoliv, tj. zda má dojít k znovuzavolání (např. key1 = true), lze zjednodušit na Unit (key1 je prvním parametrem)
-        //v tomto případě, se ať už key1 = true, či Unit, nikdy nezmění, tudíž se vykoná pouze jednou
-        //typicky se zde může použít i nějaký state a kod se znovu vykoná při změně state
-        //např. uživatel gestem změní hodnotu state a dojde k refresh, tj. zavolání getCryptoList()
-        viewModel.getCryptoList() //to co je uvnitř (tzv. side-effect, tj. nepřímo související s UI, mimo jeho scope) se vykoná pouze jednou a ne při každé rekompozici
+    LaunchedEffect(Unit) {
+        viewModel.getCryptoList()
+        favoriteViewModel.loadFavouriteCryptos()
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -55,9 +54,13 @@ fun CryptoListScreen(
             is ApiResult.Success -> {
                 // Zobraz data
                 val cryptoList = (cryptoList as ApiResult.Success).data
-                LazyColumn() {
+                LazyColumn(state = listState) {
                     items(cryptoList) { crypto ->
-                        val isFavourite = favourites.any { it.id == crypto.id }
+                        val isFavourite = if (favourites is ApiResult.Success) {
+                            (favourites as ApiResult.Success).data.any { it.id == crypto.id }
+                        } else {
+                            false
+                        }
                         CryptoItem(
                             crypto = crypto,
                             navController = navController,

@@ -19,6 +19,9 @@ interface CryptoApi {
         @Query("limit") limit: Int
     ): Response<CryptoResponse<List<Crypto>>>
 
+    @GET("assets")
+    suspend fun getCryptoListByIds(@Query("ids") cryptoIds: String): Response<CryptoResponse<List<Crypto>>>
+
     @GET("assets/{id}")
     suspend fun getCryptoDetail(
         @Path("id") id: String

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,15 +30,24 @@ import androidx.navigation.NavController
 import cz.uhk.fim.cryptoapp.R
 import cz.uhk.fim.cryptoapp.api.ApiResult
 import cz.uhk.fim.cryptoapp.viewmodels.CryptoViewModel
+import cz.uhk.fim.cryptoapp.viewmodels.FavouriteCryptoViewModel
 import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-fun CryptoDetailScreen(navController: NavController, cryptoId: String, viewModel: CryptoViewModel = koinViewModel(),) {
+fun CryptoDetailScreen(
+    navController: NavController,
+    cryptoId: String,
+    viewModel: CryptoViewModel = koinViewModel(),
+    favouriteCryptoViewModel: FavouriteCryptoViewModel = koinViewModel()
+) {
+
     val cryptoDetailResult by viewModel.cryptoDetail.collectAsState()
+    val favourites by favouriteCryptoViewModel.favouriteCryptos.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.getCryptoDetail(cryptoId)
+        favouriteCryptoViewModel.loadFavouriteCryptos()
     }
 
 
@@ -55,8 +65,14 @@ fun CryptoDetailScreen(navController: NavController, cryptoId: String, viewModel
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
+
             is ApiResult.Success -> {
                 val crypto = (cryptoDetailResult as ApiResult.Success).data
+                val isFavourite = if (favourites is ApiResult.Success) {
+                    (favourites as ApiResult.Success).data.any { it.id == crypto.id }
+                } else {
+                    false
+                }
 
                 Image(
                     painter = painterResource(id = R.drawable.coin),
@@ -96,11 +112,26 @@ fun CryptoDetailScreen(navController: NavController, cryptoId: String, viewModel
                 Spacer(modifier = Modifier.height(16.dp))
 
                 IconButton(onClick = {
-                    //todo
+                    if (isFavourite) {
+                        favouriteCryptoViewModel.removeFavoriteCrypto(crypto.id)
+                    } else {
+                        favouriteCryptoViewModel.addFavoriteCrypto(crypto)
+                    }
                 }) {
-                    Icon(Icons.Filled.FavoriteBorder, contentDescription = "Add to favourite")
+                    if (isFavourite) {
+                        Icon(
+                            Icons.Filled.Favorite,
+                            contentDescription = "Remove from Favorites"
+                        )
+                    } else {
+                        Icon(
+                            Icons.Filled.FavoriteBorder,
+                            contentDescription = "Add to Favorites"
+                        )
+                    }
                 }
             }
+
             is ApiResult.Error -> {
                 val errorMessage = (cryptoDetailResult as ApiResult.Error).message
                 Text(text = "Error: $errorMessage", style = MaterialTheme.typography.bodyLarge)

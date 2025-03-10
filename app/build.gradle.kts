@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
+    id("io.objectbox")
 }
 
 android {
@@ -73,4 +74,10 @@ dependencies {
     // OkHttp (pro logování)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+
+    //objectbox (nosql) pro datovou persistenci (vektorová DB)
+    implementation("io.objectbox:objectbox-android:4.2.0")
+
+    //datastore (náhrada za shared preferences) pro ukládání dat typu klíč hodnota
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

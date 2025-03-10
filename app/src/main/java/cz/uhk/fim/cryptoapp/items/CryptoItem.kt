@@ -69,9 +69,9 @@ fun CryptoItem(
 
         IconButton(onClick = {
             if (!isFavourite) {
-                viewModel.addFavouriteCrypto(crypto)
+                viewModel.addFavoriteCrypto(crypto)
             } else {
-                viewModel.removeFavouriteCrypto(crypto)
+                viewModel.removeFavoriteCrypto(crypto.id)
             }
         }) {
             if (!isFavourite) {

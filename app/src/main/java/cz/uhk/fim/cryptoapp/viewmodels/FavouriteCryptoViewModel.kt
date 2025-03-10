@@ -1,27 +1,63 @@
 package cz.uhk.fim.cryptoapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import cz.uhk.fim.cryptoapp.api.ApiResult
+import cz.uhk.fim.cryptoapp.api.CryptoApi
+import cz.uhk.fim.cryptoapp.data.FavouriteCryptoEntity
+import kotlinx.coroutines.flow.asStateFlow
 import androidx.lifecycle.viewModelScope
 import cz.uhk.fim.cryptoapp.data.Crypto
 import cz.uhk.fim.cryptoapp.repository.FavouriteCryptoRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-//ViewModel pro oblíbené kryptoměny, viewmodely nabízí funkce a případně další atributy pro UI
-//UI si může pomocí DI získat instanci viewmodelu (koinu) a volat patřičné funkce
-class FavouriteCryptoViewModel (private val cryptoRepository: FavouriteCryptoRepository) : ViewModel() {
-    val favouriteCryptoList = cryptoRepository.favouriteCrypto //vystavení StateFlow objektu pro UI, UI pomocí něho bude dostatávat notifikaci při změně reference
+class FavouriteCryptoViewModel(
+    private val favouriteCryptoRepository: FavouriteCryptoRepository,
+    private val cryptoApi: CryptoApi
+) : ViewModel() {
 
-    //funkce pro přidání kryptoměna, pouze volá metodu z repositáře
-    //metoda z repozitáře je suspend a proto volá se pomocí coroutine scope
-    fun addFavouriteCrypto(crypto: Crypto){
-        viewModelScope.launch { //jelikož dědíme z ViewModel() třídy může použít již předvytvořený viewModelScope, který slouží právě pro volání asynchronních funkcí (mimo hlavní UI vlákno)
-            cryptoRepository.addFavouriteCrypto(crypto)
+    private val _favouriteCryptos = MutableStateFlow<ApiResult<List<Crypto>>>(ApiResult.Loading)
+    val favouriteCryptos: StateFlow<ApiResult<List<Crypto>>> = _favouriteCryptos.asStateFlow()
+
+    init {
+        loadFavouriteCryptos()
+    }
+
+    fun addFavoriteCrypto(crypto: Crypto) {
+        viewModelScope.launch {
+            favouriteCryptoRepository.addFavouriteCrypto(crypto)
+            loadFavouriteCryptos()
         }
     }
 
-    fun removeFavouriteCrypto(crypto: Crypto){
+    fun removeFavoriteCrypto(cryptoId: String) {
         viewModelScope.launch {
-            cryptoRepository.removeFavouriteCrypto(crypto)
+            favouriteCryptoRepository.removeFavouriteCrypto(cryptoId)
+            loadFavouriteCryptos()
+        }
+    }
+
+    fun loadFavouriteCryptos() {
+        viewModelScope.launch {
+            try{
+            val favouriteEntities: List<FavouriteCryptoEntity> = favouriteCryptoRepository.getAllFavouriteCryptos()
+            if (favouriteEntities.isEmpty()) {
+                _favouriteCryptos.value = ApiResult.Success(emptyList())
+            } else {
+                val cryptoIds = favouriteEntities.map { it.cryptoId }.joinToString(",")
+
+                val result = cryptoApi.getCryptoListByIds(cryptoIds)
+
+                if(result.isSuccessful){
+                    _favouriteCryptos.value = ApiResult.Success(result.body()?.data ?: emptyList())
+                }else{
+                    _favouriteCryptos.value = ApiResult.Error(result.message())
+                }
+            }
+            }catch (e: Exception){
+                _favouriteCryptos.value = ApiResult.Error("Exception fetching favourite cryptos: ${e.message}")
+            }
         }
     }
 }

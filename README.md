@@ -38,3 +38,15 @@
 <li>v rámci samostatné práce přidali podporu i pro endpointy /assets/{{id}}, /assets/{{id}}/history a rates, kdy pro Rates jsme chtěli vytvořit i nový viewmodel (CryptoRatesViewModel)</li>
 <li>v CryptoDetailScreen pomocí CryptoViewModel získali detail o kryptoměně a opět jsme upravili UI, tak abychom obstarali všechny možné stavy ApiResult</li>
 <li>díky napojení na CryptoViewModel mohli smazat CryptoRepository, který původně sloužil pro simulaci získávání dat (aby bylo možné v UI vůbec něco vykreslit)</li>
+
+<h2>**5. cvičení**</h2>
+<p>Na pátem cvičení jsme (si):</p>
+<li>řekli o tom, že naše API je označené jako depracated a ukončí ke konci března činnost (pravděpodobně bude nová verze vyžadovat API key, tato verze každé Xté volání místo korektních výsledků vrací zprávu o ukončení činnosti API, což na UI produkuje error)</li>
+<li>přidali si závislosti na objectbox (včetně pluginů) pro persistentní ukládání dat (vektorová DB, velmi rychlá) a pro datastore - též pro úkládání dat, ale většinou formou klíč-hodnota (např. nastavení app)</li>
+<li>vytvořili nové instance (singletony) v AppModule a nové moduly přidali do inicializace koin v MainActivity</li>
+<li>přidali novou datovou třídu FavouriteCryptoEntity, pro ukládání info o oblíbených kryptoměnách</li>
+<li>upravili FavouriteCryptoRepository aby pracoval s ObjectBoxem, konkrétně s Box(em) pro FavouriteCryptoEntity</li>
+<li>upravili FavouriteCryptoViewModel aby kromě repositáře pracoval i s API - tento viewmodel se bude starat o získání dat z repositáře a následné získání aktuální informací o oblíbených kryptoměnách, ty pak zobrazí UI</li>
+<li>v rozhraní CryptoApi vytvořili novou funkci pro získávání všech kryptoměn filtrovaných na základě id</li>
+<li>upravili všechny Screeny, které s FavouriteCryptoViewModelem pracovali, tak aby podporovali navrácený List kryptoměn zabalený v ResultApi</li>
+<li>ve všech těchto Screenách přidali do LaunchedEffect i volání loadFavouriteCryptos() z FavouriteCryptoViewModelu</li>
