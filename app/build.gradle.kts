@@ -80,4 +80,6 @@ dependencies {
 
     //datastore (náhrada za shared preferences) pro ukládání dat typu klíč hodnota
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
 }

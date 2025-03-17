@@ -23,18 +23,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.ImageLoader
+import coil.compose.AsyncImage
 import cz.uhk.fim.cryptoapp.R
 import cz.uhk.fim.cryptoapp.consts.Routes
 import cz.uhk.fim.cryptoapp.data.Crypto
 import cz.uhk.fim.cryptoapp.viewmodels.FavouriteCryptoViewModel
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun CryptoItem(
     crypto: Crypto,
     navController: NavController,
     isFavourite: Boolean = false,
-    viewModel: FavouriteCryptoViewModel = koinViewModel()
+    viewModel: FavouriteCryptoViewModel = koinViewModel(),
+    imageLoader: ImageLoader = koinInject()
 ) {
     Row(
         modifier = Modifier
@@ -46,12 +50,11 @@ fun CryptoItem(
         verticalAlignment = Alignment.CenterVertically
     )
     {
-        Image(
-            painter = painterResource(R.drawable.coin),
+        AsyncImage(
+            model = "https://assets.coincap.io/assets/icons/${crypto.symbol.lowercase()}@2x.png",
             contentDescription = "${crypto.name} icon",
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier.size(48.dp),
         )
-
         Spacer(Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
