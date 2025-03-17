@@ -50,3 +50,11 @@
 <li>v rozhraní CryptoApi vytvořili novou funkci pro získávání všech kryptoměn filtrovaných na základě id</li>
 <li>upravili všechny Screeny, které s FavouriteCryptoViewModelem pracovali, tak aby podporovali navrácený List kryptoměn zabalený v ResultApi</li>
 <li>ve všech těchto Screenách přidali do LaunchedEffect i volání loadFavouriteCryptos() z FavouriteCryptoViewModelu</li>
+
+<h2>**6. cvičení**</h2>
+<p>Na šestém cvičení jsme (si):</p>
+<li>zprovoznili datastore pro ukládání jednoduchých dat, např. uživatelského nastavení</li>
+<li>pomocí datastore ukládali uživatelovu preferovanou měnu pro přepočty včetně Settings Screen a ikony do topBaru</li>
+<li>přidali knihovnu pro asynchronní načítání a nastavili cachování pro obrázky kryptoměn</li>
+<li>přidali podporu pro notifikace včetně získání oprávnění</li>
+<li>přidali worker, pomocí kterého můžeme zobrazovat notifikace (či cokoliv jiného), i když aplikace neběží, nejmenší možný interval opakování je 15 minut</li>
