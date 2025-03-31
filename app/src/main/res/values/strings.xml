@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">CryptoApp</string>
     <string name="no_favourite_crypto">No favourite crypto yet.</string>
-
+    <string name="delete_confirmation_title">Smazat z oblíbených</string>
+    <string name="delete_confirmation_message">Opravdu chcete smazat %s z oblíbených?</string>
+    <string name="entery_crypto_name_label">Zadejte název kryptoměny</string>
+    <string name="i_know_what_i_am_doing_label">Ano, vím, co dělám</string>
+    <string name="dialog_cancel">Zrušit</string>
+    <string name="dialog_remove">Smazat</string>
 </resources>

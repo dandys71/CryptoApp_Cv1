@@ -12,6 +12,7 @@ import cz.uhk.fim.cryptoapp.api.CryptoApi
 import cz.uhk.fim.cryptoapp.data.FavouriteCryptoEntity
 import cz.uhk.fim.cryptoapp.data.MyObjectBox
 import cz.uhk.fim.cryptoapp.helpers.NotificationHelper
+import cz.uhk.fim.cryptoapp.helpers.NotificationSchedulerHelper
 import cz.uhk.fim.cryptoapp.repository.FavouriteCryptoRepository
 import cz.uhk.fim.cryptoapp.repository.SettingsRepository
 import cz.uhk.fim.cryptoapp.viewmodels.CryptoRatesViewModel
@@ -70,8 +71,9 @@ val objectBoxModule = module {
     single { get<BoxStore>().boxFor(FavouriteCryptoEntity::class.java) }
 }
 
-val helperModule = module { //todo
+val helperModule = module {
     single { NotificationHelper(androidContext()) }
+    single { NotificationSchedulerHelper(androidContext()) } //úkol č. 3
 }
 
 //Pozn.: Není nutné mít vytvořené zvlášť moduly pro singletony (repositáře) a viewmodely,

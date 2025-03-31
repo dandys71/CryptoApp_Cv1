@@ -45,12 +45,17 @@ import org.koin.core.context.startKoin
 import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import cz.uhk.fim.cryptoapp.helpers.NotificationSchedulerHelper
+import cz.uhk.fim.cryptoapp.helpers.PermissionHelper
 import cz.uhk.fim.cryptoapp.workers.NotificationWorker
+import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
@@ -73,42 +78,14 @@ class MainActivity : ComponentActivity() {
                 MainScreen(navController)
             }
         }
-        requestNotificationPermission()
-        scheduleNotificationWorker()
+
+        val permissionHelper = PermissionHelper(this)
+        permissionHelper.requestNotificationPermission()
+
+        val notificationSchedulerHelper: NotificationSchedulerHelper by inject()
+        notificationSchedulerHelper.scheduleNotificationWorker()
     }
 
-    private fun scheduleNotificationWorker() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-            .build() //náš worker nevyžaduje připojení k internetu
-
-        val notificationWorkRequest = PeriodicWorkRequestBuilder<NotificationWorker>( //zde předáme naš NotificationWorker
-            1, TimeUnit.HOURS //každou hodinu
-        )
-            .setConstraints(constraints) //nastavíme constrainty
-            .build()
-
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "notificationWork",
-            //vytvoříme jedinečné pojmenování worky, abychom ji mohli identifikovat, jiné metody
-            // např. pojmenování nevyžadují a při opakovaném volání vytváří nové instance
-            ExistingPeriodicWorkPolicy.KEEP, //pokud přidáme požadavek se stejným work name, tak ponechá původní plán (nezmění čas dalšího vykonávání)
-            notificationWorkRequest //předáme náš request
-        )
-    }
-
-    private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission( //zjjistíme zda máme již permission, pokud ne zobrazíme požadavek
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-    }
 
     //zaregistrujeme callback pro navrácení výsledku z požadavku o povolení notifikací
     private val requestPermissionLauncher = registerForActivityResult(
@@ -135,6 +112,9 @@ fun MainScreen(navController: NavHostController) {
         BottomNavItem.CryptoList,
         BottomNavItem.FavouriteCrypto
     )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
 
     Scaffold(
         topBar = {
@@ -144,17 +124,33 @@ fun MainScreen(navController: NavHostController) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = Color.White
                 ),
+                navigationIcon = {
+                    //úkol č. 2
+                    if (currentRoute == Routes.CryptoDetail || currentRoute == Routes.Settings) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = "Go Back"
+                            )
+                        }
+                    }
+                },
                 actions = {
-                    IconButton(onClick = { navController.navigate(Routes.Settings) }) {
-                        Icon(
-                            Icons.Filled.Settings,
-                            tint = Color.White,
-                            contentDescription = "Settings"
-                        )
+                    //úkol č. 2
+                    if (currentRoute != Routes.Settings) {
+                        IconButton(onClick = { navController.navigate(Routes.Settings) }) {
+                            Icon(
+                                Icons.Filled.Settings,
+                                tint = Color.White,
+                                contentDescription = "Settings"
+                            )
+                        }
                     }
                 }
             )
         },
+
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -211,11 +207,11 @@ fun Navigation(navController: NavHostController, innerPadding: PaddingValues) {
         composable(Routes.CryptoDetail) { navBackStackEntry ->
             val cryptoId = navBackStackEntry.arguments?.getString("cryptoId")
             if (cryptoId != null) {
-                CryptoDetailScreen(navController, cryptoId)
+                CryptoDetailScreen(cryptoId)
             }
         }
         composable(Routes.FavouriteCrypto) { FavouriteCryptoScreen(navController) }
-        composable(Routes.Settings) { SettingsScreen(navController) }
+        composable(Routes.Settings) { SettingsScreen() }
     }
 }
 

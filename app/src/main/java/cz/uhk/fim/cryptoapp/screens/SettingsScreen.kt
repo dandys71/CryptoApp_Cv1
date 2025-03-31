@@ -39,7 +39,6 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreen(
-    navController: NavController,
     cryptoRatesViewModel: CryptoRatesViewModel = koinViewModel(),
     settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
@@ -127,11 +126,6 @@ fun SettingsScreen(
                     Text(text = "Save")
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-
-                Button(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go Back")
-                    Text("Go Back")
-                }
             }
 
             is ApiResult.Error -> {
